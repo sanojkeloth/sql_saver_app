@@ -49,8 +49,13 @@ export function Popup() {
     loadRecentQueries();
   };
 
-  const handleOpenLibrary = () => {
-    chrome.runtime.sendMessage({ type: 'OPEN_SIDE_PANEL' });
+  const handleOpenLibrary = async () => {
+    // Get current tab and open side panel
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.id) {
+      await chrome.sidePanel.open({ tabId: tab.id });
+      window.close(); // Close popup after opening side panel
+    }
   };
 
   const handleSearch = async () => {

@@ -45,7 +45,12 @@ export function SidePanel() {
   }, []);
 
   useEffect(() => {
-    filterQueries();
+    // Debounce search to avoid too many queries
+    const timer = setTimeout(() => {
+      filterQueries();
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, [currentView, selectedFolderId, searchQuery]);
 
   const loadData = async () => {
@@ -60,7 +65,14 @@ export function SidePanel() {
     let filtered: SQLQuery[] = [];
 
     if (searchQuery.trim()) {
-      filtered = await dbHelpers.searchQueries(searchQuery);
+      // When searching, search across all queries
+      const allQueries = await dbHelpers.searchQueries('');
+      filtered = allQueries.filter(q =>
+        q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.query.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
     } else if (currentView === 'recent') {
       filtered = await dbHelpers.getRecentQueries(20);
     } else if (currentView === 'folder' && selectedFolderId) {

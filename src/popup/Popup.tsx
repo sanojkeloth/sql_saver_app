@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, Plus, Library, Settings as SettingsIcon } from 'lucide-react';
+import { Search, Plus, Library } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { SaveQueryModal } from '../components/SaveQueryModal';
@@ -165,8 +165,12 @@ export function Popup() {
       {/* Footer */}
       <div className="p-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
         <span>{queries.length} queries saved</span>
-        <button className="hover:text-slate-700 dark:hover:text-slate-300">
-          <SettingsIcon className="w-4 h-4" />
+        <button
+          onClick={handleOpenLibrary}
+          className="hover:text-slate-700 dark:hover:text-slate-300"
+          title="Open full library"
+        >
+          <Library className="w-4 h-4" />
         </button>
       </div>
 

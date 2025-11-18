@@ -39,11 +39,15 @@ export function SaveQueryModal({
   const [saving, setSaving] = useState(false);
 
   const folders = useStore((state) => state.folders);
+  const setFolders = useStore((state) => state.setFolders);
   const addQuery = useStore((state) => state.addQuery);
   const updateQuery = useStore((state) => state.updateQuery);
 
   useEffect(() => {
     if (isOpen) {
+      // Reload folders when modal opens to get latest
+      dbHelpers.getAllFolders().then(setFolders);
+
       if (queryId) {
         // Load existing query
         dbHelpers.getQuery(queryId).then((q) => {

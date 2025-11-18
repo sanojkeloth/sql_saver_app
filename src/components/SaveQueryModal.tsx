@@ -7,7 +7,6 @@ import { Folder, Tag, Lock, Users, Globe } from 'lucide-react';
 import { dbHelpers } from '../db';
 import { useStore } from '../store';
 import {
-  generateQueryTitle,
   detectQueryType,
   extractTablesFromSQL,
   formatSQL,
@@ -61,8 +60,13 @@ export function SaveQueryModal({
           }
         });
       } else {
+        // For new queries, leave title blank
         setQuery(initialQuery);
-        setTitle(generateQueryTitle(initialQuery));
+        setTitle('');
+        setDescription('');
+        setTags([]);
+        setFolderId('');
+        setVisibility('private');
       }
     }
   }, [isOpen, queryId, initialQuery]);
@@ -184,10 +188,10 @@ export function SaveQueryModal({
 
         {/* Title */}
         <Input
-          label="Title"
+          label="Title *"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Query title"
+          placeholder="e.g., Active Users Report, Monthly Revenue..."
           required
         />
 

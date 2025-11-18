@@ -14,6 +14,7 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { SaveQueryModal } from '../components/SaveQueryModal';
 import { QueryCard } from '../components/QueryCard';
+import { QueryDetailView } from '../components/QueryDetailView';
 import { useStore } from '../store';
 import { dbHelpers } from '../db';
 import { SQLQuery } from '../types';
@@ -23,8 +24,10 @@ export function SidePanel() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [selectedQueryForEdit, setSelectedQueryForEdit] = useState<string | null>(null);
+  const [selectedQueryForView, setSelectedQueryForView] = useState<string | null>(null);
   const [showNewFolderDialog, setShowNewFolderDialog] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
+  const [displayedQueries, setDisplayedQueries] = useState<SQLQuery[]>([]);
 
   const queries = useStore((state) => state.queries);
   const folders = useStore((state) => state.folders);
@@ -50,6 +53,7 @@ export function SidePanel() {
     const allFolders = await dbHelpers.getAllFolders();
     setQueries(allQueries);
     setFolders(allFolders);
+    setDisplayedQueries(allQueries);
   };
 
   const filterQueries = async () => {
@@ -66,6 +70,7 @@ export function SidePanel() {
     }
 
     setQueries(filtered);
+    setDisplayedQueries(filtered);
   };
 
   const handleCopyQuery = async (query: SQLQuery) => {
@@ -108,6 +113,29 @@ export function SidePanel() {
       await loadData();
     }
   };
+
+  // If viewing query details, show that view
+  if (selectedQueryForView) {
+    return (
+      <QueryDetailView
+        queryId={selectedQueryForView}
+        onClose={() => {
+          setSelectedQueryForView(null);
+          loadData();
+        }}
+        onEdit={() => {
+          setSelectedQueryForEdit(selectedQueryForView);
+          setSelectedQueryForView(null);
+          setShowSaveModal(true);
+        }}
+        onDelete={async () => {
+          await dbHelpers.deleteQuery(selectedQueryForView);
+          setSelectedQueryForView(null);
+          await loadData();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="w-full h-screen bg-white dark:bg-slate-900 flex">
@@ -278,7 +306,7 @@ export function SidePanel() {
 
         {/* Query Grid/List */}
         <div className="flex-1 overflow-y-auto p-4">
-          {queries.length === 0 ? (
+          {displayedQueries.length === 0 ? (
             <div className="text-center py-16">
               <div className="text-slate-400 dark:text-slate-600 mb-4">
                 <Search className="w-16 h-16 mx-auto mb-2" />
@@ -302,7 +330,7 @@ export function SidePanel() {
                   : 'space-y-2'
               }
             >
-              {queries.map((query) => (
+              {displayedQueries.map((query) => (
                 <QueryCard
                   key={query.id}
                   query={query}
@@ -316,9 +344,7 @@ export function SidePanel() {
                     alert('Share functionality coming soon!');
                   }}
                   onDelete={() => handleDeleteQuery(query.id)}
-                  onClick={() => {
-                    // TODO: Open query details
-                  }}
+                  onClick={() => setSelectedQueryForView(query.id)}
                 />
               ))}
             </div>

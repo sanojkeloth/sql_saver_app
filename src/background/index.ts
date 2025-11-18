@@ -40,27 +40,6 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   }
 });
 
-// Handle keyboard shortcuts
-chrome.commands.onCommand.addListener((command) => {
-  if (command === 'quick-save') {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tab = tabs[0];
-      if (tab?.id) {
-        chrome.tabs.sendMessage(tab.id, { type: 'GET_SELECTED_TEXT' });
-      }
-    });
-  }
-
-  if (command === 'open-library') {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tab = tabs[0];
-      if (tab?.id) {
-        chrome.sidePanel.open({ tabId: tab.id });
-      }
-    });
-  }
-});
-
 // Message handling
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'OPEN_SIDE_PANEL') {
@@ -92,12 +71,5 @@ function copyToClipboard(text: string) {
     }
   });
 }
-
-// Handle extension icon click
-chrome.action.onClicked.addListener((tab) => {
-  if (tab.id) {
-    chrome.sidePanel.open({ tabId: tab.id });
-  }
-});
 
 console.log('SQL Saver background service worker initialized');

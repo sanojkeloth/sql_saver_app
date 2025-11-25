@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SQL Saver",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Save, organize, and share SQL queries with your team",
   "permissions": [
     "storage",

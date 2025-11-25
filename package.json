@@ -1,6 +1,6 @@
 {
   "name": "sql-saver",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Chrome extension for saving, organizing, and sharing SQL queries with your team",
   "type": "module",
   "scripts": {
